@@ -1,15 +1,10 @@
 { callPackage, stdenv, lib
 # Build dependencies
-, qtCustom, pkgs
+, qt514, qtCustom, pkgs
 # The whisper/waku library
-, status-go
-# Additional custom parameters
-, nimParams ? [ ] }:
+, status-go }:
 
-let
-  inherit (lib) concatStringsSep;
-
-
+let inherit (lib) concatStringsSep;
 in stdenv.mkDerivation {
   pname = "nim-status-client";
   version = "1.0.0-alpha"; # TODO
@@ -29,16 +24,20 @@ in stdenv.mkDerivation {
       ];
     };
   };
-  
-  buildInputs = with pkgs; [ nim git cmake pkgconfig which ];
-  propagatedBuildInputs = with pkgs; [ openssl pcre libGL qtCustom ];
+
+  buildInputs = with pkgs; [
+    nim git cmake pkgconfig which
+  ];
+  propagatedBuildInputs = with pkgs; [
+    openssl pcre libGL qtCustom
+  ];
 
   QTDIR = qtCustom;
-  QT5_PCFILEDIR = "${qtCustom}/lib/pkgconfig";
-  QT5_LIBDIR = "${qtCustom}/lib";
+  #QT5_PCFILEDIR = "${qt514.full}/lib/pkgconfig";
+  #QT5_LIBDIR = "${qt514.full}/lib";
 
   phases = [ "unpackPhase" "configurePhase" "buildPhase" "installPhase"];
-  
+
   # Generate vendor/.nimble contents with correct paths
   configurePhase = ''
     export NIMBLE_LINK_SCRIPT=$PWD/vendor/nimbus-build-system/scripts/create_nimble_link.sh
@@ -58,26 +57,35 @@ in stdenv.mkDerivation {
     pushd vendor/DOtherSide/build
     rm -f CMakeCache.txt
     cmake \
-        -DENABLE_DYNAMIC_LIBS=ON \
-        -DENABLE_STATIC_LIBS=OFF \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DENABLE_DOCS=OFF \
-        -DENABLE_TESTS=OFF \
-        ..
+      -DENABLE_DYNAMIC_LIBS=ON \
+      -DENABLE_STATIC_LIBS=OFF \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DENABLE_DOCS=OFF \
+      -DENABLE_TESTS=OFF \
+      ..
     cmake --build . --config Release
     popd
   '';
 
   buildPhase = ''
-    runHook preBuildPhase
-    nim c ${concatStringsSep " " nimParams} \
-      --passL:"-L$QT5_LIBDIR" \
+    #runHook preBuildPhase
+
+    export QT5_LIB_FLAGS=$(pkg-config --libs Qt5Core Qt5Qml Qt5Gui Qt5Quick Qt5QuickControls2 Qt5Widgets Qt5Svg)
+    echo "QT5_LIB_FLAGS: $QT5_LIB_FLAGS"
+
+    set -x
+    nim c \
+      --define:debug \
+      --outdir:"./bin" \
+      --passL:"--verbose" \
+      --passL:"-L${qt514.qtdeclarative}/lib" \
+      --passL:"-L${qt514.qtquickcontrols2}/lib" \
       --passL:"${status-go}/lib/libstatus.a" \
       --passL:"vendor/DOtherSide/build/lib/libDOtherSideStatic.a" \
       --passL:"vendor/QR-Code-generator/c/libqrcodegen.a" \
       --passL:"-lm" \
       --passL:"-lpcre" \
-      -d:usePcreHeader \
+      --define:usePcreHeader \
       src/nim_status_client.nim
   '';
 

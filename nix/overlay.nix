@@ -11,11 +11,14 @@ let
   inherit (super) callPackage qt514;
 in {
   # Custom collection of QT libraries to reduce size
-  qtCustom = qt514.env "qt-custom-${qt514.qtbase.version}" (with qt514; [
-    qtbase
-    qtdeclarative
-    qtquickcontrols2
-  ]);
+  qtCustom = qt514.env "qt-custom-${qt514.qtbase.version}" (
+    with qt514; [
+      qtbase
+      qtsvg
+      qtdeclarative
+      qtquickcontrols2
+    ]
+  );
 
   lib = (super.lib or { }) // {
     mkFilter = callPackage ./mkFilter.nix { };
