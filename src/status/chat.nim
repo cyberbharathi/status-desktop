@@ -97,7 +97,8 @@ proc join*(self: ChatModel, chatId: string, chatType: ChatType, ensName: string 
 
   var chat = newChat(chatId, ChatType(chatType))
   self.channels[chat.id] = chat
-  status_chat.saveChat(chatId, chatType, color=chat.color, ensName=ensName, profile=pubKey)
+  let joined = times.toUnix(times.getTime()) * 1000
+  status_chat.saveChat(chatId, chatType, color=chat.color, ensName=ensName, profile=pubKey, joined=joined)
   if ensName != "":
     chat.name = ensName
     chat.ensName = ensName

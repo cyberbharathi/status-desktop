@@ -32,7 +32,8 @@ proc saveChat*(chatId: string, chatType: ChatType, active: bool = true, color: s
       "id": chatId,
       "unviewedMessagesCount": 0, # TODO:
       "chatType":  chatType.int,
-      "timestamp": 1588940692659  # TODO:
+      "timestamp": 1588940692659,  # TODO:
+      "joined": joined
     }
   ])
 
@@ -40,9 +41,17 @@ proc deactivateChat*(chat: Chat) =
   chat.isActive = false
   discard callPrivateRPC("saveChat".prefix, %* [chat.toJsonNode])
 
-proc sortChats(x, y: Chat): int = 
-  if x.lastMessage.whisperTimestamp > y.lastMessage.whisperTimestamp: 1
-  elif x.lastMessage.whisperTimestamp == y.lastMessage.whisperTimestamp: 0
+proc sortChats(x, y: Chat): int =
+  var t1 = x.lastMessage.whisperTimestamp
+  var t2 = y.lastMessage.whisperTimestamp
+
+  if t1 <= $x.joined:
+    t1 = $x.joined
+  if t2 <= $y.joined:
+    t2 = $y.joined
+
+  if t1 > t2: 1
+  elif t1 == t2: 0
   else: -1
 
 proc loadChats*(): seq[Chat] =
