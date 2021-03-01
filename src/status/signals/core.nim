@@ -26,6 +26,10 @@ QtObject:
     self.QObject.delete
 
   proc processSignal(self: SignalsController, statusSignal: string) =
+    debug "RECEIVED SIGNAL!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo statusSignal
+
+    
     var jsonSignal: JsonNode
     try: 
       jsonSignal = statusSignal.parseJson
@@ -44,6 +48,7 @@ QtObject:
     except:
       warn "Unknown signal received", type = signalString
       signalType = SignalType.Unknown
+      echo statusSignal
       return
 
     var signal: Signal = case signalType:

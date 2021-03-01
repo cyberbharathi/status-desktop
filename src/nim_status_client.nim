@@ -16,12 +16,16 @@ import nim_status
 import status/status as statuslib
 import ./eventemitter
 import nim_status/lib/wakuV1
-
+import nim_status/lib/messages
 
 var signalsQObjPointer: pointer
 
 logScope:
   topics = "main"
+
+var messageCallback: MyClosure = proc (p0: string) = 
+  signal_handler(signalsQObjPointer, p0, "receiveSignal")
+
 
 proc mainProc() =
   let fleets =
@@ -134,7 +138,7 @@ proc mainProc() =
     wallet.checkPendingTransactions()
     wallet.start()
 
-    startWakuV1()
+    startWakuV1(messageCallback)
 
 
   engine.setRootContextProperty("loginModel", login.variant)
