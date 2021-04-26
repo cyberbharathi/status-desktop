@@ -406,7 +406,7 @@ proc pinnedMessagesByChatID*(chatId: string, cursor: string): (string, seq[Messa
 
 proc setPinMessage*(messageId: string, chatId: string, pinned: bool) =
   discard callPrivateRPC("sendPinMessage".prefix, %*[{
-    "messageID": messageId,
+    "message_id": messageId,
     "pinned": pinned,
     "chat_id": chatId,
     "localChatID": chatId
