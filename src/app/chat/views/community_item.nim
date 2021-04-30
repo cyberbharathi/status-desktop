@@ -38,7 +38,8 @@ QtObject:
     self.chats.setChats(communityItem.chats)
     self.members.setMembers(communityItem.members)
     self.nbMembersChanged()
-    self.communityMembershipRequestList.setNewData(communityItem.membershipRequests)
+    if communityItem.membershipRequests.len > 0:
+      self.communityMembershipRequestList.setNewData(communityItem.membershipRequests)
 
   proc activeChanged*(self: CommunityItemView) {.signal.}
 
