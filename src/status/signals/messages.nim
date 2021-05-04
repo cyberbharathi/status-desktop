@@ -75,8 +75,7 @@ proc fromEvent*(event: JsonNode): Signal =
         warn "Unknown content type received", type = jsonPinnedMessage{"contentType"}.getInt
         contentType = ContentType.Message
       signal.pinnedMessages.add(Message(
-        # TODO removethe 0x once it's fixed in status-go
-        id: "0x" & jsonPinnedMessage{"id"}.getStr,
+        id: jsonPinnedMessage{"message_id"}.getStr,
         chatId: jsonPinnedMessage{"chat_id"}.getStr,
         localChatId: jsonPinnedMessage{"localChatId"}.getStr,
         fromAuthor: jsonPinnedMessage{"from"}.getStr,
