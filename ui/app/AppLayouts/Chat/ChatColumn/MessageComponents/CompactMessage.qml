@@ -55,10 +55,6 @@ Item {
         id: dateGroupLbl
     }
 
-    Text {
-        color: "#33fe8f59"
-    }
-
     Rectangle {
         property alias chatText: chatText
 
@@ -71,7 +67,7 @@ Item {
                 + (!chatName.visible && chatImageContent.active ? 6 : 0)
                 + (emojiReactionLoader.active ? emojiReactionLoader.height: 0)
                 + (retry.visible && !chatTime.visible ? Style.current.smallPadding : 0)
-                + (!chatName.visible && pinnedRectangleLoader.active ? Style.current.smallPadding : 0)
+                + (pinnedRectangleLoader.active ? Style.current.smallPadding : 0)
         width: parent.width
 
         color: {
@@ -88,7 +84,7 @@ Item {
             active: pinnedMessage
             anchors.left: chatName.left
             anchors.top: parent.top
-            anchors.topMargin: Style.current.halfPadding
+            anchors.topMargin: active ? Style.current.halfPadding : 0
 
             sourceComponent: Component {
                 Rectangle {
@@ -124,6 +120,8 @@ Item {
 
         ChatReply {
             id: chatReply
+            anchors.top: pinnedRectangleLoader.active ? pinnedRectangleLoader.bottom : parent.top
+            anchors.topMargin: active ? 4 : 0
             anchors.left: chatImage.left
             longReply: active && textFieldImplicitWidth > width
             container: root.container
@@ -137,8 +135,9 @@ Item {
             active: isMessage && headerRepeatCondition
             anchors.left: parent.left
             anchors.leftMargin: Style.current.padding
-            anchors.top: chatReply.active ? chatReply.bottom : parent.top
-            anchors.topMargin: Style.current.smallPadding
+            anchors.top: chatReply.active ? chatReply.bottom :
+                                            pinnedRectangleLoader.active ? pinnedRectangleLoader.bottom : parent.top
+            anchors.topMargin: chatReply.active || pinnedRectangleLoader.active ? 4 : Style.current.smallPadding
         }
 
         UsernameLabel {
