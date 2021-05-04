@@ -405,9 +405,9 @@ proc pinnedMessagesByChatID*(chatId: string, cursor: string): (string, seq[Messa
     result = parseChatMessagesResponse(chatId, callResult.parseJson()["result"])
 
 proc setPinMessage*(messageId: string, chatId: string, pinned: bool) =
+  debug "PIN", messageId, chatId
   discard callPrivateRPC("sendPinMessage".prefix, %*[{
     "message_id": messageId,
     "pinned": pinned,
-    "chat_id": chatId,
-    "localChatID": chatId
+    "chat_id": chatId
   }])

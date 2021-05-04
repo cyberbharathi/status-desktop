@@ -950,11 +950,8 @@ QtObject:
 
   proc addPinMessage*(self: ChatsView, messageId: string, chatId: string) =
     self.upsertChannel(chatId)
-    debug "upsert"
     self.messageList[chatId].changeMessagePinned(messageId, true)
-    debug "changeMessagePinned"
     self.pinnedMessagesList[chatId].add(self.messageList[chatId].getMessageById(messageId))
-    debug "add"
 
   proc removePinMessage*(self: ChatsView, messageId: string, chatId: string) =
     self.upsertChannel(chatId)
@@ -975,12 +972,10 @@ QtObject:
 
   proc addPinnedMessages*(self: ChatsView, pinnedMessages: seq[Message]) =
     for pinnedMessage in pinnedMessages:
-      debug "NEW PINNED MESAGE", id = pinnedMessage.id, chatId = pinnedMessage.localChatId, isPinned = pinnedMessage.isPinned
       if (pinnedMessage.isPinned):
-        # TODO check if this works for group chats as well
-        self.addPinMessage(pinnedMessage.id, pinnedMessage.localChatId)
+        self.addPinMessage(pinnedMessage.id, pinnedMessage.chatId)
       else:
-        self.removePinMessage(pinnedMessage.id, pinnedMessage.localChatId)
+        self.removePinMessage(pinnedMessage.id, pinnedMessage.chatId)
 
   proc isActiveMailserverResult(self: ChatsView, resultEncoded: string) {.slot.} =
     let arg = decode[tuple[isActiveMailserverAvailable: bool, topics: seq[MailserverTopic]]](resultEncoded)
