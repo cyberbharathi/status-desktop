@@ -1,7 +1,7 @@
 library 'status-jenkins-lib@v1.2.15'
 
 pipeline {
-  agent { label 'windows' }
+  agent { label 'windows-broken' }
 
   parameters {
     string(
@@ -52,12 +52,12 @@ pipeline {
     }
 
     stage('status-go') {
-      steps { sh 'make status-go' }
+      steps { sh 'make status-go V=6' }
     }
 
     stage('Package') {
       steps { script {
-        windows.bundle()
+        windows.bundle(6)
       } }
     }
 
